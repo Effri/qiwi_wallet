@@ -1,1 +1,0 @@
-# qiwi_wallet
