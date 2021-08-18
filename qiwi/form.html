@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $("#qiwi-payment").submit(function (event) {
+                var result = true;
+                //var server_id = $( "select[name^=\'cf[server_id]\']" ).val();
+                var account = $("input[name^='account']").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/qiwi/sign.php",
+                    data: ({
+                        "account": account
+                    }),
+                    async: false,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response["error"] !== undefined) {
+                            $(".message").html(response["error"]["message"]);
+                            result = false;
+                        } else {
+                            $("input[name^='publicKey']").val(response["publicKey"]);
+                            $("input[name^='billId']").val(response["billId"]);
+                            $("input[name^='successUrl']").val(response["successUrl"]);
+                        }
+                    }
+                });
+
+                return result;
+            });
+        });
+    </script>
+    <form id="qiwi-payment" action="https://oplata.qiwi.com/create" method="GET" accept-charset="UTF-8">
+        <input type="hidden" name="publicKey" value="">
+        <input type="hidden" name="billId" value="">
+        <input type="hidden" name="successUrl" value="">
+        <div>
+            <input type="number" name="amount" placeholder="Введите сумму" min="1"
+                required="">
+        </div>
+        <input name="account" placeholder="Ваш логин на сервере" type="text" required="">
+        <div >
+            <button type="submit">
+                <span>Пополнить счет</span>
+            </button>
+        </div>
+    </form>
+</body>
+
+</html>
